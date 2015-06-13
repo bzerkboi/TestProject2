@@ -10,7 +10,9 @@ import com.google.api.server.spi.config.Api;
 import com.google.api.server.spi.config.ApiMethod;
 import com.google.api.server.spi.config.ApiNamespace;
 
+
 import javax.inject.Named;
+
 import static com.example.Mandeep.backend.OfyService.ofy;
 
 /**
@@ -27,13 +29,25 @@ public class MyEndpoint {
     /**
      * A simple endpoint method that takes a name and says Hi back
      */
-    @ApiMethod(name = "insertPerson", httpMethod="post")
-    public void insertPerson(@Named("name") String name,@Named("age") String age) {
+    @ApiMethod(name = "insertPersonObjectify", httpMethod="post")
+    public void insertPersonObjectify(@Named("name") String name,@Named("age") String age) {
+        //This api end point is for adding a new person using google datastore with objectify
         MyBean personToAdd = new MyBean();
         personToAdd.name=name;
         personToAdd.age=age;
 
         ofy().save().entity(personToAdd).now();
+    }
+
+
+    @ApiMethod(name = "insertPersonParse", httpMethod="post")
+    public AddPersonResponse insertPersonParse(@Named("name") String name,@Named("age") String age) {
+
+        AddPersonResponse personResponse = new AddPersonResponse();
+        personResponse.setReturnCode(0);
+
+
+        return personResponse;
     }
 
 }

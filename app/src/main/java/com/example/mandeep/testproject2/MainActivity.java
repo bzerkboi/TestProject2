@@ -1,6 +1,7 @@
 package com.example.mandeep.testproject2;
 
 import android.app.Activity;
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -9,10 +10,18 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.EditText;
+import android.widget.Toast;
+
 
 import com.example.mandeep.backend.mandeepAPI.MandeepAPI;
+import com.example.mandeep.backend.mandeepAPI.model.AddPersonResponse;
+
 import com.google.api.client.extensions.android.http.AndroidHttp;
 import com.google.api.client.extensions.android.json.AndroidJsonFactory;
+import com.google.api.client.googleapis.services.AbstractGoogleClientRequest;
+import com.google.api.client.googleapis.services.GoogleClientRequestInitializer;
+import com.parse.Parse;
+import com.parse.ParseObject;
 
 import java.io.IOException;
 
@@ -65,6 +74,7 @@ class EndpointsAsyncTask extends AsyncTask<Void, Void,Integer>
         this.context=context;
         this.personName=personName;
         this.personAge=personAge;
+
     }
 
     @Override
@@ -83,7 +93,16 @@ class EndpointsAsyncTask extends AsyncTask<Void, Void,Integer>
                     });*/
             MandeepAPI.Builder builder = new MandeepAPI.Builder(AndroidHttp.newCompatibleTransport(),
                     new AndroidJsonFactory(), null)
-                    .setRootUrl("https://studied-flow-95401.appspot.com/_ah/api/");
+                    .setRootUrl("http://10.0.2.2:8080/_ah/api/")
+                    .setGoogleClientRequestInitializer(new GoogleClientRequestInitializer() {
+                        @Override
+                        public void initialize(AbstractGoogleClientRequest<?> abstractGoogleClientRequest) throws IOException {
+                            abstractGoogleClientRequest.setDisableGZipContent(true);
+                        }
+                    });
+            /*MandeepAPI.Builder builder = new MandeepAPI.Builder(AndroidHttp.newCompatibleTransport(),
+                    new AndroidJsonFactory(), null)
+                    .setRootUrl("https://studied-flow-95401.appspot.com/_ah/api/");*/
 
 // end options for devappserver
 
@@ -91,14 +110,21 @@ class EndpointsAsyncTask extends AsyncTask<Void, Void,Integer>
         }
 
             //Insert a person into the DB
+/*
             try
             {
-                myApiService.insertPerson(personName,personAge).execute();
+                // Set up a progress dialog
+                //final ProgressDialog dialog = new ProgressDialog();
+                //dialog.setMessage("Saving person...");
+                //dialog.show();
+                //AddPersonResponse addPersonResponse=myApiService.insertPersonParse(personName,personAge).execute();
+               // dialog.dismiss();
             }
             catch (IOException e)
             {
                 return 0;
             }
+*/
 
         return 0;
     }
