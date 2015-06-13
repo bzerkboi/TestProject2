@@ -109,21 +109,22 @@ class EndpointsAsyncTask extends AsyncTask<Void, Void,Integer>
         }
 
             //Insert a person into the DB
-/*
+
             try
             {
                 // Set up a progress dialog
                 //final ProgressDialog dialog = new ProgressDialog();
                 //dialog.setMessage("Saving person...");
                 //dialog.show();
-                //AddPersonResponse addPersonResponse=myApiService.insertPersonParse(personName,personAge).execute();
+                //myApiService.insertPersonParse(personName,personAge).execute();
+                myApiService.userSignup("mandeepTestAPI1","123");
                // dialog.dismiss();
             }
             catch (IOException e)
             {
                 return 0;
             }
-*/
+
 
         return 0;
     }

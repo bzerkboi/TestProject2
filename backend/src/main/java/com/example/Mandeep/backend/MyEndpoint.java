@@ -9,9 +9,18 @@ package com.example.Mandeep.backend;
 import com.google.api.server.spi.config.Api;
 import com.google.api.server.spi.config.ApiMethod;
 import com.google.api.server.spi.config.ApiNamespace;
+import com.google.appengine.api.ThreadManager;
 
 
 import javax.inject.Named;
+
+import retrofit.Callback;
+import retrofit.RestAdapter;
+import retrofit.RetrofitError;
+import retrofit.client.Request;
+import retrofit.client.Response;
+import retrofit.mime.TypedByteArray;
+import retrofit.mime.TypedInput;
 
 import static com.example.Mandeep.backend.OfyService.ofy;
 
@@ -37,6 +46,28 @@ public class MyEndpoint {
         personToAdd.age=age;
 
         ofy().save().entity(personToAdd).now();
+    }
+
+    @ApiMethod(name = "userSignup", httpMethod = "post")
+    public UserSignupResponse userSignup(@Named ("userName") final String userName, @Named ("password") final String password)
+    {
+
+        try {
+
+            //Get a subset of the response
+            UserSignupResponse response = ParseRestClient.get().ParseSignupUser(new UserSignupRequest(userName, password, ""));
+            response.setSuccess(true);
+            //String responseParsed = new String(((TypedByteArray) response.getBody()).getBytes()); <--to get the raw http response
+            java.lang.System.out.println(response);
+            return response;
+        }
+        catch (Exception ex)
+        {
+            UserSignupResponse response = new UserSignupResponse();
+            response.setSuccess(false);
+            return response;
+        }
+
     }
 
 }
