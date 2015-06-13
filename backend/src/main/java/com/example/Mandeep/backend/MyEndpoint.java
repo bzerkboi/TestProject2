@@ -39,15 +39,4 @@ public class MyEndpoint {
         ofy().save().entity(personToAdd).now();
     }
 
-
-    @ApiMethod(name = "insertPersonParse", httpMethod="post")
-    public AddPersonResponse insertPersonParse(@Named("name") String name,@Named("age") String age) {
-
-        AddPersonResponse personResponse = new AddPersonResponse();
-        personResponse.setReturnCode(0);
-
-
-        return personResponse;
-    }
-
 }
