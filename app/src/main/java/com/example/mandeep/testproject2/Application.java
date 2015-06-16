@@ -17,7 +17,5 @@ public class Application extends android.app.Application {
     @Override
     public void onCreate() {
         super.onCreate();
-
-        Parse.initialize(this, "pVFihPrMiG1wW239c5KBGXvMUYhNUbHTAXcSa4oF", "8U4BQahvk7CC3wkU46yhLLtTpfe02fmZ00BsOxnP");
     }
 }

@@ -8,6 +8,7 @@ package com.example.Mandeep.backend;
 
 import com.google.api.server.spi.config.Api;
 import com.google.api.server.spi.config.ApiMethod;
+import com.google.api.server.spi.config.ApiMethod.HttpMethod;
 import com.google.api.server.spi.config.ApiNamespace;
 import com.google.appengine.api.ThreadManager;
 
@@ -55,10 +56,9 @@ public class MyEndpoint {
         try {
 
             //Get a subset of the response
-            UserSignupResponse response = ParseRestClient.get().ParseSignupUser(new UserSignupRequest(userName, password, ""));
-            response.setSuccess(true);
+            UserSignupResponse response = ParseRestClient.get().ParseSignupUser(new UserSignupRequest(userName, password, "")); //we need to send a json version of the user
+            //response.setSuccess(true);
             //String responseParsed = new String(((TypedByteArray) response.getBody()).getBytes()); <--to get the raw http response
-            java.lang.System.out.println(response);
             return response;
         }
         catch (Exception ex)
@@ -68,6 +68,22 @@ public class MyEndpoint {
             return response;
         }
 
+    }
+
+    //Need to specify path because the session token has a colon in it and it doesn't parse well in the URL.
+    @ApiMethod(name="verifyAndGetUser", httpMethod = HttpMethod.GET, path="verifyAndGetUser")
+    public ParseUser verifyAndGetUser(@Named("parseSessionToken") final String parseSessionToken)
+    {
+        try {
+
+            ParseUser parseUser = ParseRestClient.get().ValidateUserSessionGetCurrentUser(parseSessionToken);
+            return parseUser;
+        }
+        catch (Exception ex)
+        {
+            ParseUser parseUser = new ParseUser();
+            return parseUser;
+        }
     }
 
 }

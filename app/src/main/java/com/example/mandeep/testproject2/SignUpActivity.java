@@ -2,7 +2,10 @@ package com.example.mandeep.testproject2;
 
 import android.app.Activity;
 import android.app.ProgressDialog;
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
+import android.os.AsyncTask;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.view.Menu;
@@ -12,6 +15,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
+import com.example.mandeep.backend.mandeepAPI.model.UserSignupResponse;
 import com.parse.ParseUser;
 import com.parse.SignUpCallback;
 
@@ -26,6 +30,8 @@ public class SignUpActivity extends Activity {
             usernameEditText,
             passwordEditText,
             passwordAgainEditText;
+
+    private static final String PREFS_NAME = "MyPrefsFile";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -44,7 +50,7 @@ public class SignUpActivity extends Activity {
             public void onClick(View v) {
                 signup(); //when the user clicks a button, we go to signup method
             }
-        } );
+        });
     }
 
     private void signup()
@@ -65,30 +71,8 @@ public class SignUpActivity extends Activity {
         final ProgressDialog dialog = new ProgressDialog(SignUpActivity.this);
         dialog.setMessage("Signing you up!");
         dialog.show();
-
-        //Now we can use the ParseUser object to setup the user and sign them up
-        ParseUser user = new ParseUser();
-        user.setUsername(username);
-        user.setPassword(password);
-
-        //We call the parse signup method async (in the background) to avoid blocking the main thread
-        user.signUpInBackground(new SignUpCallback() {
-            @Override
-            public void done(com.parse.ParseException e) {
-                dialog.dismiss();
-                if (e != null) {
-                    // Show the error message
-                    Toast.makeText(SignUpActivity.this, e.getMessage(), Toast.LENGTH_LONG).show();
-                } else {
-                    // Start an intent for the dispatch activity
-                    Toast.makeText(SignUpActivity.this, "You have signed up!", Toast.LENGTH_LONG).show();
-                    Intent intent = new Intent(SignUpActivity.this, DispatchActivity.class);
-                    intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
-                    startActivity(intent);
-                }
-            }
-        });
-
+        new SignUpUserTask(this, username,password).execute();
+        dialog.dismiss();
     }
 
     @Override
@@ -111,5 +95,43 @@ public class SignUpActivity extends Activity {
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    class SignUpUserTask extends AsyncTask<Void, Void,Integer> {
+
+        private Context context;
+        private String userName, userPassword;
+
+        SignUpUserTask(Context context, String userName, String userPassword){
+            this.context=context;
+            this.userName=userName;
+            this.userPassword=userPassword;
+        }
+
+        @Override
+        protected Integer doInBackground(Void... params) {
+            //Now we can use the ParseUser object to setup the user and sign them up
+
+            try {
+                //Lets call the GAE endpoint to signup the user
+                UserSignupResponse signupResponse= DispatchActivity.myApiService.userSignup(userName, userPassword).execute();
+
+                //Now we need to write the session token to shared preferences
+                SharedPreferences settings = getSharedPreferences(PREFS_NAME,0);
+                SharedPreferences.Editor editor = settings.edit();
+                editor.putString("parseSessionToken", signupResponse.getSessionToken()); //write session token to memory so user doesn't have to sign up again
+                editor.commit();
+
+                Intent intent = new Intent(SignUpActivity.this, DispatchActivity.class);
+                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
+                startActivity(intent);
+
+                return 1;
+            }
+            catch (Exception ex)
+            {
+                return 0;
+            }
+        }
     }
 }

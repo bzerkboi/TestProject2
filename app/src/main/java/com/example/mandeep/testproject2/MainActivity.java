@@ -58,7 +58,7 @@ public class MainActivity extends Activity {
     {
         EditText personText=(EditText)findViewById(R.id.nameText);
         EditText ageText=(EditText)findViewById(R.id.ageText);
-        new EndpointsAsyncTask(this, personText.getText().toString(),ageText.getText().toString()).execute();
+        //new EndpointsAsyncTask(this, personText.getText().toString(),ageText.getText().toString()).execute();
     }
 }
 

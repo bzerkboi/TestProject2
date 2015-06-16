@@ -2,6 +2,8 @@ package com.example.Mandeep.backend;
 
 import retrofit.Callback;
 import retrofit.http.Body;
+import retrofit.http.GET;
+import retrofit.http.Header;
 import retrofit.http.Headers;
 import retrofit.http.POST;
 import retrofit.http.Path;
@@ -17,4 +19,7 @@ public interface ParseAPI {
     })
     @POST("/1/users")
     UserSignupResponse ParseSignupUser(@Body UserSignupRequest userSignupRequest);
+
+    @GET("/1/users/me")
+    ParseUser ValidateUserSessionGetCurrentUser(@Header("X-Parse-Session-Token") String parseSessionToken);
 }
