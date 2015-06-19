@@ -16,8 +16,6 @@ import android.widget.EditText;
 import android.widget.Toast;
 
 import com.example.mandeep.backend.mandeepAPI.model.UserSignupResponse;
-import com.parse.ParseUser;
-import com.parse.SignUpCallback;
 
 import java.text.ParseException;
 

@@ -1,7 +1,15 @@
 package com.example.Mandeep.backend;
 
+import com.google.api.server.spi.response.UnauthorizedException;
+import com.google.appengine.repackaged.com.google.gson.Gson;
+import com.google.gson.annotations.SerializedName;
+
+import retrofit.ErrorHandler;
 import retrofit.RequestInterceptor;
 import retrofit.RestAdapter;
+import retrofit.RetrofitError;
+import retrofit.client.Response;
+import retrofit.mime.TypedByteArray;
 
 /**
  * Created by Mandeep on 6/13/2015.
@@ -33,8 +41,12 @@ public class ParseRestClient {
                 .setEndpoint(ROOT)
                 .setLogLevel(RestAdapter.LogLevel.FULL)
                 .setRequestInterceptor(requestInterceptor)
+                .setErrorHandler(new MyErrorHandler())
                 .build();
 
         Parse_REST_CLIENT = builder.create(ParseAPI.class);
     }
+
+
+
 }

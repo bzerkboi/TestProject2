@@ -1,5 +1,7 @@
 package com.example.Mandeep.backend;
 
+import com.google.api.server.spi.response.UnauthorizedException;
+
 import retrofit.Callback;
 import retrofit.http.Body;
 import retrofit.http.GET;
@@ -21,5 +23,11 @@ public interface ParseAPI {
     UserSignupResponse ParseSignupUser(@Body UserSignupRequest userSignupRequest);
 
     @GET("/1/users/me")
-    ParseUser ValidateUserSessionGetCurrentUser(@Header("X-Parse-Session-Token") String parseSessionToken);
+    ParseUser ValidateUserSessionGetCurrentUser(@Header("X-Parse-Session-Token") String parseSessionToken) throws UnauthorizedException;
+
+    @Headers("Content-Type: application/json")
+    @POST("/1/classes/PeopleInfo")
+    CreateObjectResponse InsertPersonInfo(@Body PersonInfo personInfo);
+
+
 }

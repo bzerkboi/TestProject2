@@ -10,6 +10,7 @@ import com.google.api.server.spi.config.Api;
 import com.google.api.server.spi.config.ApiMethod;
 import com.google.api.server.spi.config.ApiMethod.HttpMethod;
 import com.google.api.server.spi.config.ApiNamespace;
+import com.google.api.server.spi.response.UnauthorizedException;
 import com.google.appengine.api.ThreadManager;
 
 
@@ -31,22 +32,8 @@ import static com.example.Mandeep.backend.OfyService.ofy;
 @Api(name = "mandeepAPI", version = "v1", namespace = @ApiNamespace(ownerDomain = "backend.Mandeep.example.com", ownerName = "backend.Mandeep.example.com", packagePath = ""))
 public class MyEndpoint {
 
-    public MyEndpoint()
-    {
+    public MyEndpoint() {
 
-    }
-
-    /**
-     * A simple endpoint method that takes a name and says Hi back
-     */
-    @ApiMethod(name = "insertPersonObjectify", httpMethod="post")
-    public void insertPersonObjectify(@Named("name") String name,@Named("age") String age) {
-        //This api end point is for adding a new person using google datastore with objectify
-        MyBean personToAdd = new MyBean();
-        personToAdd.name=name;
-        personToAdd.age=age;
-
-        ofy().save().entity(personToAdd).now();
     }
 
     @ApiMethod(name = "userSignup", httpMethod = "post")
@@ -67,22 +54,43 @@ public class MyEndpoint {
             response.setSuccess(false);
             return response;
         }
-
     }
 
     //Need to specify path because the session token has a colon in it and it doesn't parse well in the URL.
     @ApiMethod(name="verifyAndGetUser", httpMethod = HttpMethod.GET, path="verifyAndGetUser")
-    public ParseUser verifyAndGetUser(@Named("parseSessionToken") final String parseSessionToken)
-    {
+    public ParseUser verifyAndGetUser(@Named("parseSessionToken") final String parseSessionToken) throws UnauthorizedException {
         try {
 
             ParseUser parseUser = ParseRestClient.get().ValidateUserSessionGetCurrentUser(parseSessionToken);
             return parseUser;
         }
+        catch (UnauthorizedException ex)
+        {
+            throw ex;
+        }
         catch (Exception ex)
         {
             ParseUser parseUser = new ParseUser();
             return parseUser;
+        }
+    }
+
+    @ApiMethod(name="insertPersonInfo", httpMethod = HttpMethod.POST, path="insertPersonInfo")
+    public CreateObjectResponse InsertPersonInfo(@Named("personName") String personName, @Named("personAge") int personAge)
+    {
+        try
+        {
+            PersonInfo personInfo=new PersonInfo();
+            personInfo.setPersonName(personName);
+            personInfo.setPersonAge(personAge);
+            CreateObjectResponse createObjectResponse=ParseRestClient.get().InsertPersonInfo(personInfo);
+            return createObjectResponse;
+        }
+        catch (Exception ex)
+        {
+            System.out.print(ex.toString());
+            CreateObjectResponse createObjectResponse=new CreateObjectResponse();
+            return createObjectResponse;
         }
     }
 

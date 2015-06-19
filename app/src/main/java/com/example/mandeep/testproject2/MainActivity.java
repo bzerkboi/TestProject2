@@ -19,8 +19,6 @@ import com.google.api.client.extensions.android.http.AndroidHttp;
 import com.google.api.client.extensions.android.json.AndroidJsonFactory;
 import com.google.api.client.googleapis.services.AbstractGoogleClientRequest;
 import com.google.api.client.googleapis.services.GoogleClientRequestInitializer;
-import com.parse.Parse;
-import com.parse.ParseObject;
 
 import java.io.IOException;
 
@@ -58,7 +56,7 @@ public class MainActivity extends Activity {
     {
         EditText personText=(EditText)findViewById(R.id.nameText);
         EditText ageText=(EditText)findViewById(R.id.ageText);
-        //new EndpointsAsyncTask(this, personText.getText().toString(),ageText.getText().toString()).execute();
+        new EndpointsAsyncTask(this, personText.getText().toString(),ageText.getText().toString()).execute();
     }
 }
 
@@ -66,7 +64,6 @@ class EndpointsAsyncTask extends AsyncTask<Void, Void,Integer>
 {
     private Context context;
     private String personName, personAge;
-    private static MandeepAPI myApiService=null;
 
     EndpointsAsyncTask(Context context, String personName, String personAge)
     {
@@ -79,35 +76,6 @@ class EndpointsAsyncTask extends AsyncTask<Void, Void,Integer>
     @Override
     protected Integer doInBackground(Void... params) {
 
-
-        if(myApiService == null) { // Only do this once
-            /*QuoteEndpoint.Builder builder = new QuoteEndpoint.Builder(AndroidHttp.newCompatibleTransport(),
-                    new AndroidJsonFactory(), null)
-                    .setRootUrl("http://10.0.2.2:8080/_ah/api/")
-                    .setGoogleClientRequestInitializer(new GoogleClientRequestInitializer() {
-                        @Override
-                        public void initialize(AbstractGoogleClientRequest<?> abstractGoogleClientRequest) throws IOException {
-                            abstractGoogleClientRequest.setDisableGZipContent(true);
-                        }
-                    });*/
-            MandeepAPI.Builder builder = new MandeepAPI.Builder(AndroidHttp.newCompatibleTransport(),
-                    new AndroidJsonFactory(), null)
-                    .setRootUrl("http://10.0.2.2:8080/_ah/api/")
-                    .setGoogleClientRequestInitializer(new GoogleClientRequestInitializer() {
-                        @Override
-                        public void initialize(AbstractGoogleClientRequest<?> abstractGoogleClientRequest) throws IOException {
-                            abstractGoogleClientRequest.setDisableGZipContent(true);
-                        }
-                    });
-            /*MandeepAPI.Builder builder = new MandeepAPI.Builder(AndroidHttp.newCompatibleTransport(),
-                    new AndroidJsonFactory(), null)
-                    .setRootUrl("https://studied-flow-95401.appspot.com/_ah/api/");*/
-
-// end options for devappserver
-
-            myApiService = builder.build();
-        }
-
             //Insert a person into the DB
 
             try
@@ -116,8 +84,7 @@ class EndpointsAsyncTask extends AsyncTask<Void, Void,Integer>
                 //final ProgressDialog dialog = new ProgressDialog();
                 //dialog.setMessage("Saving person...");
                 //dialog.show();
-                //myApiService.insertPersonParse(personName,personAge).execute();
-                myApiService.userSignup("mandeepTestAPI1","123");
+                DispatchActivity.myApiService.insertPersonInfo(Integer.parseInt(personAge), personName).execute();
                // dialog.dismiss();
             }
             catch (IOException e)

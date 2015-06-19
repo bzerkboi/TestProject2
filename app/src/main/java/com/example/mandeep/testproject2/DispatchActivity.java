@@ -15,10 +15,12 @@ import com.example.mandeep.backend.mandeepAPI.model.ParseUser;
 import com.example.mandeep.backend.mandeepAPI.model.UserSignupResponse;
 import com.google.api.client.extensions.android.http.AndroidHttp;
 import com.google.api.client.extensions.android.json.AndroidJsonFactory;
+import com.google.api.client.googleapis.json.GoogleJsonResponseException;
 import com.google.api.client.googleapis.services.AbstractGoogleClientRequest;
 import com.google.api.client.googleapis.services.GoogleClientRequestInitializer;
 
 import java.io.IOException;
+import java.text.ParseException;
 
 //DispatchActivity: handles starting the logged in activity, MainActivity, or logged out activity,
 // WelcomeActivity. This activity is the main entry point for the app.
@@ -83,7 +85,15 @@ public class DispatchActivity extends Activity {
                 }
 
                 return 1;
-            } catch (Exception ex) {
+            }
+            catch (GoogleJsonResponseException ex)
+            {
+                if(ex.getStatusCode()==401) {//The user either doesn't exisit or we need to re-log them in.
+                    startActivity(new Intent(context, WelcomeActivity.class));
+                }
+                return 0;
+            }
+            catch (Exception ex) {
                 System.out.println(ex);
 
                 return  0;
